@@ -7,146 +7,88 @@ import axios from "../../service/client";
 import WebsiteFormLanding from "../website-form-landing/WebsiteFormLanding";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { postUpdateWebsite, postDeleteWebsite, postCreateWebsite } from "../../service/api/api.websites"
+import { useForm, Controller } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { removeWebsite, setWebsite as setWebsiteDisp, setFilters, setFilteredTestData } from "../../store/websiteSlice";
+import { useNavigate } from "react-router-dom";
 
-function WebsiteForm(props) {
-  const [website, setWebsite] = useState(null);
-  const [websiteName, setWebsiteName] = useState();
-  const [websiteUrl, setWebsiteUrl] = useState();
-  const [websiteIsPA, setWebsiteIsPa] = useState();
+export default function WebsiteForm(props) {
   const user = useSelector((state) => state.auth.user);
   const [error, setError] = useState(false);
   const [landing, setLanding] = useState(false);
   const [operation, setOperation] = useState("");
   const params = useParams();
+  const dispatch = useDispatch();
+
+  const _website = useSelector((state) => state.website.website);
+  const [website, setWebsite] = useState(_website);
+
+  const { register, handleSubmit, control } = useForm({
+    defaultValues: props.type === "update" ? website : {},
+  });
+
 
   useEffect(() => {
-    if (props.type !== "create") {
-      axios
-        .get("/website", {
-          params: {
-            website: params.websiteid,
-          },
-        })
-        .then(function (res) {
-          setWebsite(res.data);
-        })
-        .catch(function (error) {
-          //console.log(error);
-        })
-        .then(function () {
-          // always executed
-        });
-    }
-  }, []);
-
-  const saveWebsite = () => {
-    axios
-      .post("/create-website", {
-        name: document.getElementById("website_name").value,
-        url: document.getElementById("website_url").value,
-        is_pa: document.getElementById("website_is_pa_yes").checked
-          ? true
-          : false,
-        user: user.id,
-      })
-      .then(function (res) {
-        // alert(Boolean(res.data))
-      })
-      .catch(function (error) {
-        //console.log(error);
-        setError(true);
-        setOperation("Errore");
-        setError(landing);
-      })
-      .then(function () {
-        // always executed
-      });
-  };
-
-  const updateWebsite = () => {
-    axios
-      .post("/update-website", {
-        name: websiteName,
-        url: websiteUrl,
-        is_pa: websiteIsPA ? true : false,
-        website: params.websiteid,
-      })
-      .then(function (res) {
-        // alert(Boolean(res.data))
-      })
-      .catch(function (error) {
-        //console.log(error);
-        setOperation("Errore");
-        setError(landing);
-      })
-      .then(function () {
-        // always executed
-      });
-  };
-
-  const deleteWebsite = () => {
-    axios
-      .post("/delete-website", {
-        website: params.websiteid,
-      })
-      .then(function (res) {
-        // alert(Boolean(res.data))
-      })
-      .catch(function (error) {
-        //console.log(error);
-        setOperation("Errore");
-        setError(landing);
-      })
-      .then(function () {
-        // always executed
-      });
-  };
-
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
-
-    if (props.type === "delete") {
-      deleteWebsite();
-      setOperation("Eliminazione sito avvenuta con successo!");
-
-      setLanding(true);
+    if (props.type === "update") {
+      const id = params.websiteid;
+      dispatch(setWebsiteDisp({ id: id }))
+      dispatch(setFilters())
+dispatch(setFilteredTestData())
     } else {
-      if (website === null) {
-        // alert("submit-new")
+      dispatch(setWebsiteDisp({}))
+      dispatch(setFilters())
+dispatch(setFilteredTestData())
+    }
+  }, [])
 
-        saveWebsite();
+
+
+  const onSubmit = (data, event) => {
+
+    if (props.type === "create") {  //create a new website
+      const website = {
+        ...data,
+        level: 'N.A.',
+        score: 0,
+        user: user?._id
+      }
+      postCreateWebsite(website).then((res) => {
         setOperation("Inserimento sito avvenuto con successo!");
-
         setLanding(true);
-      } else {
-        // alert("submit-update")
-
-        updateWebsite();
+      }).catch((err) => {
+        setOperation("Errore");
+        setError(err);
+        setLanding(true);
+      })
+    } else if (props.type === "update") {
+      postUpdateWebsite(params.websiteid, data).then((res) => {
         setOperation("Aggiornamento dati del sito avvenuto con successo!");
         setLanding(true);
-      }
+      }).catch((err) => {
+        setOperation("Errore");
+        setError(err);
+        setLanding(true);
+      })
     }
+
   };
 
-  useEffect(() => {
-    setWebsiteName(website?.name);
-    setWebsiteUrl(website?.url);
-    setWebsiteIsPa(website?.is_pa);
-  }, [website]);
-
-  const onChangeNameHandler = (event) => {
-    setWebsiteName(event.target.value);
-  };
-  const onChangeUrlHandler = (event) => {
-    setWebsiteUrl(event.target.value);
-  };
-  const onClickIsPAHandler = (event) => {
-    if (event.target.id === "website_is_pa_yes" && event.target.checked) {
-      setWebsiteIsPa(true);
-    } else {
-      setWebsiteIsPa(false);
+  const onSubmitOnlyDelete = (data, event) => {
+    if (props.type === "delete") {
+      dispatch(removeWebsite({}))
+      postDeleteWebsite(params.websiteid).then((res) => {
+        setOperation("Eliminazione sito avvenuta con successo!");
+        setLanding(true);
+      }).catch((err) => {
+        setOperation("Errore");
+        setError(landing);
+        setLanding(true);
+      })
     }
-  };
+  }
+
+
   return (
     <>
       {!landing && (props.type === "update" || props.type === "create") && (
@@ -155,36 +97,43 @@ function WebsiteForm(props) {
             {props.action}
           </Card.Header>
           <Card.Body>
-            <Form onSubmit={onSubmitHandler} action="">
+            <Form onSubmit={handleSubmit(onSubmit)}>
               <Form.Group className="mb-3">
                 <Form.Label className="w-100">
                   Nome del sito
-                  <Form.Control
-                    type="text"
-                    id="website_name"
-                    required
-                    aria-required="true"
-                    placeholder="Inserisci il nome del tuo sito..."
-                    value={websiteName}
-                    onChange={onChangeNameHandler}
-                  />
                 </Form.Label>
+
+                <Controller
+                  name="name"
+                  control={control}
+                  defaultValue={website?.name}
+                  placeholder="Inserisci il nome del tuo sito..."
+                  rules={{ required: true }}
+                  render={({ field }) =>
+                    <Form.Control
+                      type="text"
+                      {...field} />}
+                />
+
               </Form.Group>
 
               <Form.Group className="mb-3">
                 <Form.Label className="w-100">
-                  {" "}
                   <abbr title="Uniform Resource Locator">URL</abbr>
-                  <Form.Control
-                    type="text"
-                    id="website_url"
-                    required
-                    aria-required="true"
-                    placeholder="Inserisci l'indirizzo del tuo sito..."
-                    value={websiteUrl}
-                    onChange={onChangeUrlHandler}
-                  />
                 </Form.Label>
+
+                <Controller
+                  name="url"
+                  control={control}
+                  defaultValue={String(website?.url)}
+                  placeholder="Inserisci l'URL del tuo sito..."
+                  rules={{ required: true }}
+                  render={({ field }) =>
+                    <Form.Control
+                      type="text"
+                      {...field} />}
+                />
+
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -199,8 +148,8 @@ function WebsiteForm(props) {
                     hrefLang={"it"}
                   >
                     Legge Stanca
-                  </a>{" "}
-                  e{" "}
+                  </a>
+                  e
                   <a
                     className="default-anchor"
                     rel="noreferrer external prev"
@@ -218,16 +167,14 @@ function WebsiteForm(props) {
                   id="website_is_pa_yes"
                   label="Si"
                   type="radio"
-                  checked={websiteIsPA ? true : false}
-                  onClick={onClickIsPAHandler}
+                  defaultChecked={website?.isPublic ? true : false}
                 />
                 <Form.Check
                   name="group1"
                   id="website_is_pa_no"
                   label="No"
                   type="radio"
-                  checked={!websiteIsPA ? true : false}
-                  onClick={onClickIsPAHandler}
+                  defaultChecked={!website?.isPublic ? true : false}
                 />
               </Form.Group>
 
@@ -235,7 +182,6 @@ function WebsiteForm(props) {
                 type="submit"
                 variant="primary"
                 className="w-100 shadow1"
-                onClick={onSubmitHandler}
               >
                 Salva
               </Button>
@@ -253,13 +199,15 @@ function WebsiteForm(props) {
         </Card>
       )}
 
-      {!landing && props.type === "delete" && (
+      {landing && <WebsiteFormLanding action={operation} />}
+
+      {(landing == false) && (props.type === "delete") && (
         <Card className="card-specific shadow1">
           <Card.Header as="h2" className="border-bottom">
             Confermi l'eliminazione del sito?
           </Card.Header>
           <Card.Body>
-            <Form onSubmit={onSubmitHandler} action="">
+            <Form onSubmit={handleSubmit(onSubmitOnlyDelete)} action="">
               <Button type="submit" variant="primary" className="w-100">
                 Conferma eliminazione
               </Button>
@@ -267,9 +215,6 @@ function WebsiteForm(props) {
           </Card.Body>
         </Card>
       )}
-      {landing && <WebsiteFormLanding action={operation} />}
     </>
   );
 }
-
-export default WebsiteForm;

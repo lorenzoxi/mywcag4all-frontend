@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useMemo } from "react";
+import { React, useMemo } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -15,14 +15,14 @@ import {
   updateTestFilterType,
   updateTestParentFilterTag,
   updateTestFilterTag,
-  resetTestFilter,
+  setFilters,
   updateTestFilterPage,
-} from "../../store/testSlice";
+  setFilteredTestData,
+} from "../../store/websiteSlice";
 
 function SearchBar({ uid, updateFilters }) {
 
-  const testFilters = useSelector((state) => state.test);
-  // const testFilters = useSelector((state) => state.test.filter_page);
+  const filters = useSelector((state) => state.website.website.filters);
 
   const dispatch = useDispatch();
 
@@ -32,7 +32,7 @@ function SearchBar({ uid, updateFilters }) {
 
   const handleParentButtonClick = (event) => {
     const tag = event.target.dataset.tag;
-    dispatch(updateTestFilterPage({index: 1}));
+    dispatch(updateTestFilterPage({ index: 1 }));
     dispatch(updateTestParentFilterTag({ tag: tag }));
     dispatch(updateTestFilterTag({ tag: null }));
     updateFilters();
@@ -40,7 +40,7 @@ function SearchBar({ uid, updateFilters }) {
 
   const handleChildButtonClick = (event) => {
     const tag = event.target.dataset.tag;
-    dispatch(updateTestFilterPage({index: 1}));
+    dispatch(updateTestFilterPage({ index: 1 }));
     dispatch(updateTestFilterTag({ tag: tag }));
     updateFilters();
   };
@@ -52,7 +52,8 @@ function SearchBar({ uid, updateFilters }) {
   };
 
   const handleReset = () => {
-    dispatch(resetTestFilter());
+    dispatch(setFilters())
+    dispatch(setFilteredTestData());
   };
 
   const onChangeHandlerCheckbox = (event) => {
@@ -90,14 +91,14 @@ function SearchBar({ uid, updateFilters }) {
   };
 
   const buttonToDisplay = useMemo(() => {
-    switch (testFilters.filter_parent_tag) {
-      case "1":
+    switch (filters.filter_parent_tag) {
+      case "structure":
         return (
           <>
             <Col className="p-0 mr-1">
               <Button
                 variant="primary"
-                data-tag="6"
+                data-tag="html"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -108,7 +109,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="primary"
-                data-tag="7"
+                data-tag="forms"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -119,7 +120,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="primary"
-                data-tag="8"
+                data-tag="tables"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -130,7 +131,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="primary"
-                data-tag="9"
+                data-tag="navigation"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -141,7 +142,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="primary"
-                data-tag="10"
+                data-tag="orientation"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -152,7 +153,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="primary"
-                classdata-tag="11"
+                classdata-tag="separation"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -163,7 +164,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 ml-1">
               <Button
                 variant="primary"
-                data-tag="12"
+                data-tag="link"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -173,13 +174,13 @@ function SearchBar({ uid, updateFilters }) {
           </>
         );
 
-      case "2":
+      case "presentation":
         return (
           <>
             <Col className="p-0 mr-1">
               <Button
                 variant="success"
-                data-tag="13"
+                data-tag="css"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -190,7 +191,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="success"
-                data-tag="14"
+                data-tag="no-css"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -201,7 +202,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="success"
-                data-tag="15"
+                data-tag="images"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -212,7 +213,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="success"
-                data-tag="16"
+                data-tag="colors"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -223,7 +224,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="success"
-                data-tag="17"
+                data-tag="layout"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -234,7 +235,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mr-1">
               <Button
                 variant="success"
-                data-tag="18"
+                data-tag="animations"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -244,13 +245,13 @@ function SearchBar({ uid, updateFilters }) {
           </>
         );
 
-      case "3":
+      case "behavior":
         return (
           <>
             <Col className="p-0 mr-1">
               <Button
                 variant="warning"
-                data-tag="19"
+                data-tag="dynamic-elements"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -261,7 +262,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="warning"
-                data-tag="20"
+                data-tag="keyboard"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -272,7 +273,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="warning"
-                data-tag="21"
+                data-tag="input"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -283,7 +284,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="warning"
-                data-tag="22"
+                data-tag="errors"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -294,7 +295,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="warning"
-                data-tag="23"
+                data-tag="usage-time"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -305,7 +306,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 ml-1">
               <Button
                 variant="warning"
-                data-tag="24"
+                data-tag="authentication"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -315,13 +316,13 @@ function SearchBar({ uid, updateFilters }) {
           </>
         );
 
-      case "4":
+      case "contents":
         return (
           <>
             <Col className="p-0">
               <Button
                 variant="danger"
-                data-tag="25"
+                data-tag="text"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -332,7 +333,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="danger"
-                data-tag="26"
+                data-tag="images"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -343,7 +344,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="danger"
-                data-tag="27"
+                data-tag="charts"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -354,7 +355,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="danger"
-                data-tag="28"
+                data-tag="data"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -365,7 +366,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="danger"
-                data-tag="29"
+                data-tag="media"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -376,7 +377,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0 mx-1">
               <Button
                 variant="danger"
-                data-tag="30"
+                data-tag="cognitive-overload"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -387,7 +388,7 @@ function SearchBar({ uid, updateFilters }) {
             <Col className="p-0">
               <Button
                 variant="danger"
-                data-tag="31"
+                data-tag="disorientation"
                 onClick={handleChildButtonClick}
                 className="w-100 h-100 shadow-sm"
               >
@@ -397,14 +398,14 @@ function SearchBar({ uid, updateFilters }) {
           </>
         );
 
-      case "5":
+      case "waria":
         return (
           <>
             <Col className="p-0">
               <Button
                 variant="info"
                 className="w-100 h-100 shadow-sm"
-                data-tag="32"
+                data-tag="waria-states"
                 onClick={handleChildButtonClick}
               >
                 Stati
@@ -415,7 +416,7 @@ function SearchBar({ uid, updateFilters }) {
               <Button
                 variant="info"
                 className="w-100 h-100 shadow-sm"
-                data-tag="33"
+                data-tag="waria-roles"
                 onClick={handleChildButtonClick}
               >
                 Ruoli
@@ -426,7 +427,7 @@ function SearchBar({ uid, updateFilters }) {
               <Button
                 variant="info"
                 className="w-100 h-100 shadow-sm"
-                data-tag="34"
+                data-tag="waria-properties"
                 onClick={handleChildButtonClick}
               >
                 Proprietà
@@ -438,7 +439,7 @@ function SearchBar({ uid, updateFilters }) {
       default:
         return <> </>;
     }
-  }, [testFilters]);
+  }, [filters]);
 
   const displayControls = useMemo(() => {
     return (
@@ -453,7 +454,7 @@ function SearchBar({ uid, updateFilters }) {
               name="inputquery"
               id="inputquery"
               onKeyUp={onChangeHandler}
-              defaultValue={testFilters.filter_word}
+              defaultValue={filters.filter_word}
             />
           </Col>
 
@@ -466,7 +467,7 @@ function SearchBar({ uid, updateFilters }) {
               name="applicable"
               id="applicable"
               onClick={onChangeHandlerCheckbox}
-              value={testFilters.filer_isApplicable}
+              value={filters.filer_isApplicable}
             />
             <Form.Check
               inline
@@ -475,7 +476,7 @@ function SearchBar({ uid, updateFilters }) {
               id="passed"
               name="passed"
               onClick={onChangeHandlerCheckbox}
-              value={testFilters.filter_isPassed}
+              value={filters.filter_isPassed}
             />
           </Col>
 
@@ -489,16 +490,16 @@ function SearchBar({ uid, updateFilters }) {
               onChange={onChangeHandlerSelect}
             >
               <option value="">Livello</option>
-              <option value="1" selected={testFilters.filter_level === "1"}>
+              <option value="A" selected={filters.filter_level === "A"}>
                 A
               </option>
-              <option value="2" selected={testFilters.filter_level === "2"}>
+              <option value="AA" selected={filters.filter_level === "AA"}>
                 AA
               </option>
-              <option value="3" selected={testFilters.filter_level === "3"}>
+              <option value="AAA" selected={filters.filter_level === "AAA"}>
                 AAA
               </option>
-              <option value="0" selected={testFilters.filter_level === "4"}>
+              <option value="N.A." selected={filters.filter_level === "N.A."}>
                 Non specificato
               </option>
             </Form.Select>
@@ -514,13 +515,13 @@ function SearchBar({ uid, updateFilters }) {
               onChange={onChangeHandlerSelect}
             >
               <option value="">Tipologia di test</option>
-              <option value="1" selected={testFilters.filter_type === "1"}>
+              <option value="A" selected={filters.filter_type === "A"}>
                 Automatico
               </option>
-              <option value="2" selected={testFilters.filter_type === "2"}>
+              <option value="S" selected={filters.filter_type === "S"}>
                 Semiautomatico
               </option>
-              <option value="3" selected={testFilters.filter_type === "3"}>
+              <option value="M" selected={filters.filter_type === "M"}>
                 Manuale
               </option>
             </Form.Select>
@@ -538,7 +539,7 @@ function SearchBar({ uid, updateFilters }) {
         </Row>
       </>
     );
-  }, [testFilters]);
+  }, [filters]);
 
   return (
     <>
@@ -569,7 +570,7 @@ function SearchBar({ uid, updateFilters }) {
                 <Button
                   variant="primary"
                   className="w-100 shadow-sm"
-                  data-tag="1"
+                  data-tag="structure"
                   onClick={handleParentButtonClick}
                 >
                   Struttura
@@ -579,7 +580,7 @@ function SearchBar({ uid, updateFilters }) {
                 <Button
                   variant="success"
                   className="w-100 shadow-sm"
-                  data-tag="2"
+                  data-tag="presentation"
                   onClick={handleParentButtonClick}
                 >
                   Presentazione
@@ -590,7 +591,7 @@ function SearchBar({ uid, updateFilters }) {
                 <Button
                   variant="warning"
                   className="w-100 shadow-sm"
-                  data-tag="3"
+                  data-tag="behavior"
                   onClick={handleParentButtonClick}
                 >
                   Comportamento
@@ -601,7 +602,7 @@ function SearchBar({ uid, updateFilters }) {
                 <Button
                   variant="danger"
                   className="w-100 shadow-sm"
-                  data-tag="4"
+                  data-tag="contents"
                   onClick={handleParentButtonClick}
                 >
                   Contenuti
@@ -611,7 +612,7 @@ function SearchBar({ uid, updateFilters }) {
                 <Button
                   variant="info"
                   className="w-100 shadow-sm"
-                  data-tag="5"
+                  data-tag="waria"
                   onClick={handleParentButtonClick}
                 >
                   W-ARIA

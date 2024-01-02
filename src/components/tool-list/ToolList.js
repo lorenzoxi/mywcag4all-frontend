@@ -6,7 +6,7 @@ import ContainerB from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-function ToolList({ toolList }) {
+export default function ToolList({ tools }) {
   const [selected, setSelectedTool] = useState();
   const focusRef = useRef();
 
@@ -21,7 +21,7 @@ function ToolList({ toolList }) {
           <Row>
             <Col xs={3} className="p-0">
               <ListGroup defaultActiveKey="#1" id="tool_list" role="tablist" aria-controls="test_tools_list">
-                {toolList?.map((tool_element, index) => (
+                {tools?.map((tool_element, index) => (
                   <ListGroup.Item
                     action
                     href={`#${index}`}
@@ -36,7 +36,7 @@ function ToolList({ toolList }) {
             </Col>
             <Col className="p-0">
               <Tab.Content id="test_tools_list" role="region" aria-live="polite">
-                {toolList?.map((tool_element, index) => (
+                {tools?.map((tool_element, index) => (
                   <Tab.Pane id={`#${index}`} eventKey={`#${index}`} role="tabpanel" >
                     <ToolCard  ref={focusRef} tabindex="1" id={selected} data={tool_element} index={index}/>
                   </Tab.Pane>
@@ -49,5 +49,3 @@ function ToolList({ toolList }) {
     </>
   );
 }
-
-export default ToolList;

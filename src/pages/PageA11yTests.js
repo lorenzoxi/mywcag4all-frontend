@@ -1,4 +1,4 @@
-import { React, useState, useMemo, useEffect } from "react";
+import { React, useMemo } from "react";
 import Container from "../components/container/Container";
 import MyPagination from "../components/pagination/MyPagination";
 import Card from "react-bootstrap/Card";
@@ -6,33 +6,32 @@ import SearchBar from "../components/searchbar/SearchBar";
 import ItemList from "../components/item-list/ItemList";
 import Title from "../components/title/Title";
 import Breadcrumb from "../components/breadcrumb/Breadcrumb";
-import axios from "../service/client";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
-import Spinner from "react-bootstrap/Spinner";
 import { useTitle } from "../hooks/HookTitle";
-import { useSelector,useDispatch } from "react-redux";
-import { filterTestData } from "../store/testSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { filterTestData } from "../store/websiteSlice";
+import { postUpdateWebsiteTests } from "../service/api/api.websites";
+import { updateWebsiteResults } from "../store/websiteSlice";
 
-function PageA11y(props) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function PageA11y(props) {
   const website = useSelector((state) => state.website.website);
-  const user = useSelector((state) => state.auth.user);
-  const page = useSelector((state) => state.test.filter_page);
-  const testData = useSelector((state) => state.test.test_data_filtered);
+  const page = useSelector((state) => state.website.website.filters.filter_page);
+  const testData = useSelector((state) => state.website.website.tests_filtered);
 
   useTitle("Tests | Dashboard | Accessibilità | MyWcag4All");
   const dispatch = useDispatch();
 
-  const updateData = () => {
-    axios
-      .post("/website-update-level-and-score", {
-        user: user.id,
-        website: website.id,
-      })
-      .then(function (res) { })
-      .catch(function (error) {});
+  const updateWebsiteTests = () => {
+    
+    
+    postUpdateWebsiteTests(website._id, website.tests).then((res) => {
+      dispatch(updateWebsiteResults({ results: res }))
+      
+    }).catch((err) => {
+      console.log("error");
+    });
   };
 
 
@@ -54,13 +53,12 @@ function PageA11y(props) {
   };
 
   const displayPagination = useMemo(() => {
-    //console.log("listGrouped ",listGrouped)
+
     return (
       <MyPagination
         totalPage={listGrouped.length}
         actualPage={page}
         type={"test"}
-
       />
     );
   }, [listGrouped.length, page]);
@@ -118,55 +116,44 @@ function PageA11y(props) {
         updateFilters={updateFilters}
       />
 
-      {isLoading ? (
-        <>
-          <div className="text-center">
-            <Spinner animation="border" role="status" className="m-5">
-              <span className="visually-hidden">Caricamento...</span>
-            </Spinner>
-          </div>
-        </>
-      ) : (
-        <>
-          {displayItems}
+      <>
+        {displayItems}
 
-          <Card className="main-card my-3 shadow1">
-            <Row>
-              <Col>
-                <Link
-                  to="/accessibility-dev/a11y/choice"
-                  className="btn btn-success btn-block shadow w-100"
-                  state={{ location: "a11y" }}
-                  rel="prev"
-                  onClick={updateData}
-                >
-                  Salva e torna alla pagina dashboard
-                </Link>
-              </Col>
-              <Col>
-                <Link
-                  to="/accessibility-dev/a11y/wcag"
-                  className="btn btn-success btn-block shadow w-100"
-                  state={{ location: "a11y" }}
-                  rel="prev"
-                  onClick={updateData}
-                >
-                  Vai ai criteri WCAG
-                </Link>
-              </Col>
-            </Row>
-          </Card>
+        <Card className="main-card my-3 shadow1">
+          <Row>
+            <Col>
+              <Link
+                to="/accessibility-dev/a11y/choice"
+                className="btn btn-success btn-block shadow w-100"
+                state={{ location: "a11y" }}
+                rel="prev"
+                onClick={updateWebsiteTests}
+              >
+                Salva e torna alla pagina dashboard
+              </Link>
+            </Col>
+            <Col>
+              <Link
+                to="/accessibility-dev/a11y/wcag"
+                className="btn btn-success btn-block shadow w-100"
+                state={{ location: "a11y" }}
+                rel="prev"
+                onClick={updateWebsiteTests}
+              >
+                Salva e vai ai criteri WCAG
+              </Link>
+            </Col>
+          </Row>
+        </Card>
 
-          {listGrouped.length > 1 && !isLoading && (
-            <>
-              <Card className="main-card my-3 shadow1">
-                {displayPagination}
-              </Card>
-            </>
-          )}
-        </>
-      )}
+        {listGrouped.length > 1 && (
+          <>
+            <Card className="main-card my-3 shadow1">
+              {displayPagination}
+            </Card>
+          </>
+        )}
+      </>
     </Container>
   );
 }
-export default PageA11y;

@@ -1,7 +1,7 @@
 import React from "react";
 import Badge from "react-bootstrap/Badge";
 
-function WcagLevels(props) {
+export default function WcagLevels(props) {
   return (
     <Badge pill bg="dark">
       {props.level === 0 ? (
@@ -12,5 +12,3 @@ function WcagLevels(props) {
     </Badge>
   );
 }
-
-export default WcagLevels;

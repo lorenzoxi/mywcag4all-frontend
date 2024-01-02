@@ -33,13 +33,6 @@ function ChartsType({ score, automaticTest, semiautomaticTest, manualTest }) {
     fontWeight: "bold",
   };
 
-
-  useEffect(() => {
-    const element = Array.from(document.getElementsByClassName("pie-chart"));
-    element[0].setAttribute('aria-hidden','true');
-    element[0].setAttribute('aria-role','presentation');
-  }, []);
-
   return (
     <>
       <Container className="m-0 p-0">
@@ -86,27 +79,7 @@ function ChartsType({ score, automaticTest, semiautomaticTest, manualTest }) {
           <p className="visually-hidden">I test automatici rappresentano l'{Math.ceil((automaticTest*100)/(automaticTest*1 +semiautomaticTest*2+manualTest*3)) } % del totale dei test effettuati</p>
           <p className="visually-hidden">I test automatici rappresentano l'{Math.ceil((semiautomaticTest*100)/(automaticTest*1 +semiautomaticTest*2+manualTest*3)) } % del totale dei test effettuati</p>
           <p className="visually-hidden">I test automatici rappresentano l'{Math.ceil((manualTest*100)/(automaticTest*1 +semiautomaticTest*2+manualTest*3)) } % del totale dei test effettuati</p>
-          <h3 className="text-center py-2">Composizione del punteggio</h3>
-          <PieChart 
-            id="ciao"
-            aria-hidden="true"
-            className="w-50 pie-chart"
-            viewBoxSize={[300, 200]}
-            center={[150, 100]}
-            data={data}
-            radius={30}
-            labelPosition={120}
-            segmentsShift={2}
-            label={({ dataEntry }) =>
-              dataEntry.value !== 0
-                ? Math.round(dataEntry.percentage) + "% \n" + dataEntry.title
-                : ""
-            }
-            labelStyle={{
-              ...defaultLabelStyle,
-            }}
-            segmentsTabIndex={({ dataEntry }) => dataEntry.index}
-          />
+
         </Row>
       </Container>
     </>

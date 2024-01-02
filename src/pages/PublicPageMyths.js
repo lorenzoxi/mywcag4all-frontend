@@ -1,7 +1,6 @@
-import { React, useState, useEffect, useMemo, useRef } from "react";
+import { React, useState, useEffect, useMemo } from "react";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
-import axios from "../service/client";
 import Breadcrumb from "../components/breadcrumb/Breadcrumb";
 import Note from "../components/note/Note";
 import Title from "../components/title/Title";
@@ -9,7 +8,7 @@ import { Link } from "react-router-dom";
 import { useTitle } from "../hooks/HookTitle";
 import { getMyths } from "../service/api/api.myths";
 
-function PageMyths(props) {
+export default function PageMyths(props) {
   const [myths, setMyths] = useState([]);
   const [index, setIndex] = useState(0);
 
@@ -92,4 +91,3 @@ function PageMyths(props) {
     </Container>
   );
 }
-export default PageMyths;

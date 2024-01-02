@@ -18,6 +18,8 @@ import { useSelector, useDispatch } from "react-redux";
 
 function SearchBarTools(props) {
   const tools = useSelector((state) => state.tools);
+  const toolsClasses = useSelector((state) => state.tools.classes);
+
   const dispatch = useDispatch();
 
   // const [data, setData] = useState();
@@ -47,11 +49,10 @@ function SearchBarTools(props) {
     dispatch(filterTestData());
   };
 
-  const getTypes = useMemo(() => {
+  const getClasses = useMemo(() => {
     return (
-      tools.tools_data_type &&
-      tools.tools_data_type .map((type, index) => {
-        return <option value={type}> {type} </option>;
+      toolsClasses.map((_class, index) => {
+        return <option id={`tool_class_${index}`} key={`tool-class-${index}`} value={_class._id}> {_class.name} </option>;
       })
     );
   }, [tools]);
@@ -78,16 +79,16 @@ function SearchBarTools(props) {
                 name="type"
                 id="type"
                 onChange={handleChange}
-                value={tools.filter_type}
+                defaultValue={tools.filter_type}
               >
                 <option value="">Tipologia</option>
-                {getTypes}
+                {getClasses}
               </Form.Select>
             </Col>
 
             <Col md={12} lg={6} className="px-1 my-1">
               <Form.Label className="visually-hidden" htmlFor="word">
-                Licenza
+                Cerca per nome
               </Form.Label>
               <Form.Control
                 placeholder="Cerca per nome..."

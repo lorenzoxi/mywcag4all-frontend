@@ -6,12 +6,10 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
-import axios from "../service/client";
 import { useTitle } from "../hooks/HookTitle";
 import { useSelector, useDispatch } from "react-redux";
-import { setTestData } from "../store/testSlice";
 
-function PageA11yDashboard(props) {
+export default function PageA11yDashboard(props) {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const website = useSelector((state) => state.website.website);
@@ -40,37 +38,12 @@ function PageA11yDashboard(props) {
     },
   ];
 
-  const clearFilters = () => {
-    const tmp = localStorage.getItem("test-filters");
-    if(tmp){
-      localStorage.removeItem("test-filters")
-      localStorage.removeItem("test-page")
-    }
-  }
 
-  const clickHandler = () => {
-    axios
-      .post("/update-criterias", {
-        user: user.id,
-        website: website.id,
-      })
-      .then(function (res) {})
-      .catch(function (error) {
-        //console.log(error);
-      });
+  const clickHandler = () => {  //TODO:
+
+
+      
   };
-
-  useEffect(() => {
-    axios
-    .get("/tests", {
-      params: {
-        website: website.id,
-      },
-    })
-    .then(function (res) {  
-      dispatch(setTestData({data: res.data}))
-    })
-  }, []);
 
 
   return (
@@ -106,7 +79,7 @@ function PageA11yDashboard(props) {
       </Card>
 
       <Card className="main-card shadow1 mt-5">
-        <h2 className="bold6">Valuta il sito</h2>
+        <h2 className="bold6">Valuta il sito "{website?.name}"</h2>
 
         <Row>
           <Col xs={12}>
@@ -114,9 +87,8 @@ function PageA11yDashboard(props) {
               to="/accessibility-dev/a11y/tests"
               className="btn btn-primary w-100 mb-2 mt-5 bold7 shadow-sm"
               state={{ location: "a11y" }}
-              onClick={clearFilters}
             >
-              Consulta i test di accessibilità 
+              Consulta i test di accessibilità
             </Link>
           </Col>
         </Row>
@@ -137,4 +109,3 @@ function PageA11yDashboard(props) {
     </Container>
   );
 }
-export default PageA11yDashboard;

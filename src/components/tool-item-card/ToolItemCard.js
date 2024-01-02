@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Badge from "react-bootstrap/Badge";
 
-function ToolItemCard(props) {
+export default function ToolItemCard(props) {
   return (
     <li key={props.id} className="item-card w-100 shadow-sm my-1">
       <Row className="">
@@ -17,10 +17,10 @@ function ToolItemCard(props) {
           <span className="visually-hidden">Tipologia dello strumento: </span>
 
           {
-            props.types.map((type, index) => {
+            props.classes.map((clss, index) => {
               return (
                 <Badge key={index} pillas="span" bg="secondary" className="mx-1">
-                  {type}
+                  {clss.name}
                 </Badge>
               )
             })
@@ -31,7 +31,7 @@ function ToolItemCard(props) {
         <Col md={12} lg={2} >
           <Link
             className="btn btn-outline-primary my-1 w-100 align-self-center"
-            to={`${props.index}`}
+            to={`${props.id}`}
             state={{ name: props.name, location: "tools" }}
           >
             Dettagli
@@ -41,5 +41,3 @@ function ToolItemCard(props) {
     </li>
   );
 }
-
-export default ToolItemCard;

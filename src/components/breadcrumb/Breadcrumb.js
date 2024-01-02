@@ -6,13 +6,13 @@ function Breadcrumb(props) {
     return (
         <nav className="breadcrumb shadow-sm main-card" aria-label="Breadcrumb">
             <ol>
-                {props.pages && props.pages.map( page_element => (
+                {props.pages && props.pages.map( (page_element, index) => (
                     <li>
                         {
                             (! page_element.isCurrent)?
 
                             (
-                                <Link to={`${page_element.url}`} state={{ location: page_element.state }} className="default-anchor">
+                                <Link to={`${page_element.url}`} state={{ location: page_element.state }} className="default-anchor" key={`brd-it-${index}`}>
                                 {page_element.page}
                                 </Link>
                             )

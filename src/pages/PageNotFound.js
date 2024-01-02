@@ -7,7 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useTitle } from "../hooks/HookTitle";
 import Title from "../components/title/Title";
 
-function PageNotFound(props) {
+export default function PageNotFound(props) {
   const { user, isAuthenticated, isLoading } = useAuth0();
   useTitle("Pagina non trovata | MyWcag4All");
 
@@ -36,4 +36,3 @@ function PageNotFound(props) {
     ))
   );
 }
-export default PageNotFound;

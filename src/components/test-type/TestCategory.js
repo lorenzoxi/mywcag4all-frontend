@@ -1,21 +1,21 @@
 import React from "react";
 import { FaCogs, FaCog, FaHandPaper, FaQuestionCircle } from "react-icons/fa";
 
-function TestType(props) {
+export default function TestCategory(props) {
   const displayIcon = () => {
-    switch (props.type) {
-      case 1:
+    switch (props.category) {
+      case 'A':
         return (
-            <FaCogs className="badge-item-card" alt="test di tipo automatico" />
+            <FaCog className="badge-item-card" alt="test di tipo automatico" />
         );
-      case 2:
+      case 'S':
         return (
-            <FaCog
+            <FaCogs
               className="badge-item-card"
               alt="test di tipo semiautomatico"
             />
         );
-      case 3:
+      case 'M':
         return (
             <FaHandPaper
               className="badge-item-card"
@@ -33,5 +33,3 @@ function TestType(props) {
 
   return displayIcon();
 }
-
-export default TestType;

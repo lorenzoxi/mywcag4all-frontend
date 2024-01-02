@@ -5,7 +5,6 @@ import ItemList from "../components/item-list/ItemList";
 import MyPagination from "../components/pagination/MyPagination";
 import Breadcrumb from "../components/breadcrumb/Breadcrumb";
 import Title from "../components/title/Title";
-import axios from "../service/client";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ContainerB from "react-bootstrap/Container";
@@ -14,74 +13,82 @@ import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/esm/Spinner";
 import { useTitle } from "../hooks/HookTitle";
 import { useSelector, useDispatch } from "react-redux";
+import { getWebsites } from "../service/api/api.websites";
+import { getRanking } from "../service/api/api.ranking";
+import { setRanking } from "../store/rankingSlice";
 import {
   resetToolFilter,
   setToolsData,
-  setToolsDataLicense,
-  setToolsDataTypes,
+  setToolsDataLicenses,
+  setToolsDataClsses,
 } from "../store/slice.tools";
-import { setWebsitesData } from "../store/websiteSlice";
-import { resetTestFilter } from "../store/testSlice";
+import { setWebsites as setWebsitesData } from "../store/websiteSlice";
+import { setFilters, setFilteredTestData } from "../store/websiteSlice";
 import { useAuth0 } from "@auth0/auth0-react";
 import { addUser } from "../store/authSlice";
-function PageWebsites(props) {
+import { getTools, getToolsClasses } from "../service/api/api.tools";
+import { getLicenses } from "../service/api/api.licenses";
+import { setSections } from "../store/sectionsSlice";
+import { getSections } from "../service/api/api.sections";
+
+
+export default function PageWebsites(props) {
   const [showList, setShowList] = useState(true);
   const [websiteToUpdate, setWebsiteToUpdate] = useState();
-  const [isLoading, setIsLoading] = useState(true);
-  const _user = useSelector((state) => state.auth.user);
-  const page = useSelector((state) => state.website.page_website);
-  const websites = useSelector((state) => state.website.data_websites);
+  const page = useSelector((state) => state.website.page);
+  const userId = useSelector((state) => state.auth.user._id);
 
   useTitle("I miei siti | Accessibilità | MyWcag4All");
   const dispatch = useDispatch();
   const { user } = useAuth0();
+  const websites = useSelector((state) => state.website.websites);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const email = user?.email;
-    const id = user?.sub.split("|")[1];
 
-    axios
-      .get("/user", {
-        params: {
-          user_id: id,
-          user_email: email,
-        },
-      })
-      .then(function (res) {
-        const uemail = res.data.email;
-        const uname = res.data.username;
-        const uid = res.data.id;
-        dispatch(addUser({ email: uemail, username: uname, id: uid }));
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        setIsLoading(false);
-      });
+    dispatch(addUser({
+      _id: '654a6fd5d44f1013932f0944',
+      name: 'Lorenzo',
+      surname: 'Perinello',
+      username: 'peri',
+      student_id: '10203040',
+      email: 'perinellolor@gmail.com',
+      password: '$2b$10$kgA6ZxZkBPsYUAd0u57AWe/2.lT12eKrZlXql2hJACwJDPDayw6O.',
+      is_admin: true,
+      createdAt: '2023-11-07T17:11:49.326Z',
+      updatedAt: '2023-11-07T17:11:49.326Z'
+    }))
 
-    dispatch(resetTestFilter());
+    dispatch(setFilters())
+    dispatch(setFilteredTestData());
     dispatch(resetToolFilter());
-    axios
-      .get("/websites", {
-        params: {
-          user: id,
-        },
-      })
-      .then(function (res) {
-        dispatch(setWebsitesData({ data: res.data }));
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        setIsLoading(false);
-      });
 
-    axios.get("/tools", {}).then(function (res) {
-      dispatch(setToolsData({ data: res.data }));
+    getWebsites(userId).then((res) => {
+      dispatch(setWebsitesData(res));
+      dispatch(setFilters())
+      dispatch(setFilteredTestData())
+      setIsLoaded(true);
+    })
+
+    //
+    getTools().then((res) => {
+      dispatch(setToolsData(res));
     });
-    axios.get("/tool-types", {}).then(function (res) {
-      dispatch(setToolsDataTypes({ data: res.data }));
+
+    getRanking().then((res) => {
+      dispatch(setRanking(res));
+    })
+
+    getToolsClasses().then((res) => {
+      dispatch(setToolsDataClsses({ data: res }));
+    })
+
+    getLicenses().then(function (res) {
+      dispatch(setToolsDataLicenses({ data: res }));
     });
-    axios.get("/tool-licenses", {}).then(function (res) {
-      dispatch(setToolsDataLicense({ data: res.data }));
+
+    getSections().then((res) => {
+      dispatch(setSections({ data: res }));
     });
   }, []);
 
@@ -103,7 +110,6 @@ function PageWebsites(props) {
   }, [listGrouped, page]);
 
   const updateHandling = (id) => {
-    // alert("modify")
     setWebsiteToUpdate(id);
     setShowList(false);
   };
@@ -127,54 +133,44 @@ function PageWebsites(props) {
           </Card>
 
           <br />
-          {isLoading ? (
-            <Card className="main-card shadow1 text-center">
-              <div className="w-100 text-center">
-                <Spinner animation="border" role="status" className="m-5">
-                  <span className="visually-hidden">
-                    Caricamento dei risultati
-                  </span>
-                </Spinner>
-              </div>
-            </Card>
-          ) : (
-            <>
-              {listGrouped.length !== 0 && (
-                <ContainerB className="mt-5 md-display-none">
-                  <Row>
-                    <Col xs={5} className="px-2 bold8 responsive-font-size">
-                      <span>NOME DEL SITO</span>
-                    </Col>
 
-                    <Col
-                      xs={1}
-                      className="p-0 text-center bold8 text-center responsive-font-size"
-                    >
-                      <span>PUNTI</span>
-                    </Col>
+          <>
+            {listGrouped.length !== 0 && (
+              <ContainerB className="mt-5 md-display-none">
+                <Row>
+                  <Col xs={5} className="px-2 bold8 responsive-font-size">
+                    <span>NOME DEL SITO</span>
+                  </Col>
 
-                    <Col
-                      xs={2}
-                      className="p-0 text-center bold8 text-center responsive-font-size"
-                    >
-                      <span>WCAG</span>
-                    </Col>
+                  <Col
+                    xs={1}
+                    className="p-0 text-center bold8 text-center responsive-font-size"
+                  >
+                    <span>PUNTI</span>
+                  </Col>
 
-                    <Col xs={4} className="p-0 text-center"></Col>
-                  </Row>
-                </ContainerB>
-              )}
-              <ItemList
-                cardList={websiteByPage}
-                index={page}
-                type="website"
-                updateHandling={updateHandling}
-                element={"sito"}
-              />
-            </>
-          )}
+                  <Col
+                    xs={2}
+                    className="p-0 text-center bold8 text-center responsive-font-size"
+                  >
+                    <span>WCAG</span>
+                  </Col>
 
-          {listGrouped.length > 1 && !isLoading && (
+                  <Col xs={4} className="p-0 text-center"></Col>
+                </Row>
+              </ContainerB>
+            )}
+            <ItemList
+              cardList={websiteByPage}
+              index={page}
+              type="website"
+              updateHandling={updateHandling}
+              element={"sito"}
+            />
+          </>
+
+
+          {listGrouped.length > 1 && (
             <>
               <Card className="main-card my-3 shadow1">
                 <MyPagination
@@ -190,7 +186,7 @@ function PageWebsites(props) {
     } else {
       return <WebsiteForm id={websiteToUpdate} type="create" />;
     }
-  }, [listGrouped, page, showList, websiteByPage, websiteToUpdate, isLoading]);
+  }, [listGrouped, page, showList, websiteByPage, websiteToUpdate]);
 
   const breadcrumb_pages = [
     {
@@ -207,8 +203,21 @@ function PageWebsites(props) {
 
       <Title title={props.title} className="title-a11y" />
 
-      {display}
+      {
+        !isLoaded &&
+        <Card className="main-card shadow1 text-center">
+          <div className="w-100 text-center">
+            <Spinner animation="border" role="status" className="m-5">
+              <span className="visually-hidden">
+                Caricamento dei risultati
+              </span>
+            </Spinner>
+          </div>
+        </Card>
+      }
+      {
+        isLoaded && display
+      }
     </Container>
   );
 }
-export default PageWebsites;

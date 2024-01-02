@@ -8,18 +8,19 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import { useTitle } from "../hooks/HookTitle";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { postUpdateWebsiteSections } from "../service/api/api.websites";
+import { updateWebsiteResults } from "../store/websiteSlice";
 
-function PageA11yWcagGuidelineList(props) {
+export default function PageA11yWcagGuidelineList(props) {
   const [wcag1, setWcag1] = useState(false);
   const [wcag2, setWcag2] = useState(false);
   const [wcag3, setWcag3] = useState(false);
   const [wcag4, setWcag4] = useState(false);
   const website = useSelector((state) => state.website.website);
-
+  const sections = useSelector((state) => state.website.website.sections);
   useTitle("Controllo sezioni WCAG | Dashboard | Accessibilità | MyWcag4All");
-
-  
+  const dispatch = useDispatch();
 
   const onClickHandler = (event) => {
     const section = Number(event.target.dataset.section);
@@ -46,6 +47,14 @@ function PageA11yWcagGuidelineList(props) {
     }
   };
 
+  const saveAndUpdateSections = () => {
+    postUpdateWebsiteSections(website._id, website.sections).then((res) => {
+    }).catch((err) => {
+      console.log("error");
+    });
+
+  }
+
   const procede = useMemo(() => {
     if (wcag1 && wcag2 && wcag3 && wcag4) {
       return (
@@ -53,8 +62,9 @@ function PageA11yWcagGuidelineList(props) {
           to="/accessibility-dev/a11y/result"
           className="btn btn-success w-100 mt-3 shadow"
           state={{ location: "a11y" }}
+          onClick={saveAndUpdateSections}
         >
-          Guarda i risultati
+          Salva e guarda i risultati
         </Link>
       );
     } else {
@@ -107,128 +117,43 @@ function PageA11yWcagGuidelineList(props) {
       />
 
       <Row>
-        <Col sm={3} className="d-flex align-items-stretch">
-          <Card className="card-specific shadow-sm">
-            <Card.Header as="h2" className="h3 border-bottom">
-              Sezione WCAG 1
-            </Card.Header>
-            <Card.Body>
-              Le informazioni e i componenti dell'interfaccia utente devono
-              essere presentati agli utenti in modi in cui essi possano
-              percepirli.
-            </Card.Body>
-            <Card.Footer>
-              <Link
-                to="/accessibility-dev/a11y/wcag-guidelines/1"
-                className="btn btn-primary"
-                state={{ location: "a11y" }}
-              >
-                Vai alla checklist dei criteri della sezione 1
-              </Link>
-              <Form.Group className="mt-3">
-                <Form.Check
-                  type="checkbox"
-                  label="Sezione 1 controllata"
-                  id="section-1"
-                  onClick={onClickHandler}
-                  data-section="1"
-                />
-              </Form.Group>
-            </Card.Footer>
-          </Card>
-        </Col>
+        {
+          sections?.map((section, index) => {
+            return (
+              <Col sm={3} className="d-flex align-items-stretch">
 
-        <Col sm={3} className="d-flex align-items-stretch">
-          <Card className="card-specific shadow-sm">
-            <Card.Header as="h2" className="h3 border-bottom">
-              Sezione WCAG 2
-            </Card.Header>
-            <Card.Body>
-              I componenti e la navigazione dell'interfaccia utente devono
-              essere utilizzabili.
-            </Card.Body>
-            <Card.Footer>
-              <Link
-                to="/accessibility-dev/a11y/wcag-guidelines/2"
-                className="btn btn-primary"
-                state={{ location: "a11y" }}
-              >
-                Vai alla checklist dei criteri della sezione 2
-              </Link>
-              <Form.Group className="mt-3">
-                <Form.Check
-                  type="checkbox"
-                  label="Sezione 2 controllata"
-                  onClick={onClickHandler}
-                  id="section-2"
-                  data-section="2"
-                />
-              </Form.Group>
-            </Card.Footer>
-          </Card>
-        </Col>
-
-        <Col sm={3} className="d-flex align-items-stretch">
-          <Card className="card-specific shadow-sm">
-            <Card.Header as="h2" className="h3 border-bottom">
-              Sezione WCAG 3
-            </Card.Header>
-            <Card.Body>
-              Le informazioni e le operazioni dell'interfaccia utente devono
-              essere comprensibili.
-            </Card.Body>
-            <Card.Footer>
-              <Link
-                to="/accessibility-dev/a11y/wcag-guidelines/3"
-                className="btn btn-primary"
-                state={{ location: "a11y" }}
-              >
-                Vai alla checklist dei criteri della sezione 3
-              </Link>
-              <Form.Group className="mt-3">
-                <Form.Check
-                  type="checkbox"
-                  label="Sezione 3 controllata"
-                  onClick={onClickHandler}
-                  id="section-3"
-                  data-section="3"
-                />
-              </Form.Group>
-            </Card.Footer>
-          </Card>
-        </Col>
-
-        <Col sm={3}>
-          <Card className="card-specific shadow-sm">
-            <Card.Header as="h2" className="h3 border-bottom">
-              Sezione WCAG 4
-            </Card.Header>
-            <Card.Body>
-              Il contenuto deve essere abbastanza robusto per essere
-              interpretato in maniera affidabile da una grande varietà di
-              programmi utente, comprese le tecnologie assistive.{" "}
-            </Card.Body>
-            <Card.Footer>
-              <Link
-                to="/accessibility-dev/a11y/wcag-guidelines/4"
-                className="btn btn-primary"
-                state={{ location: "a11y" }}
-              >
-                Vai alla checklist dei criteri della sezione 4
-              </Link>
-              <Form.Group className="mt-3">
-                <Form.Check
-                  type="checkbox"
-                  label="Sezione 4 controllata"
-                  onClick={onClickHandler}
-                  data-section="4"
-                  id="section-4"
-                />
-              </Form.Group>
-            </Card.Footer>
-          </Card>
-        </Col>
+                <Card className="card-specific shadow-sm">
+                  <Card.Header as="h2" className="h3 border-bottom">
+                    Sezione WCAG {section.index}
+                  </Card.Header>
+                  <Card.Body>
+                    {section.description}
+                  </Card.Body>
+                  <Card.Footer>
+                    <Link
+                      to={"/accessibility-dev/a11y/wcag-guidelines/" + section.index}
+                      className="btn btn-primary"
+                      state={{ location: "a11y" }}
+                    >
+                      Vai alla checklist dei criteri della sezione {section.index}
+                    </Link>
+                    <Form.Group className="mt-3">
+                      <Form.Check
+                        type="checkbox"
+                        label={"Sezione " + section.index + " controllata"}
+                        id={"section-" + section.index}
+                        onClick={onClickHandler}
+                        data-section={section.index}
+                      />
+                    </Form.Group>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            )
+          })
+        }
       </Row>
+
       <Row className="mt-5">
         <Col>
           <Card className="main-card shadow1">
@@ -237,8 +162,9 @@ function PageA11yWcagGuidelineList(props) {
               to="/accessibility-dev/a11y/choice"
               className="btn btn-secondary w-100 mt-3"
               state={{ location: "a11y" }}
+              onClick={saveAndUpdateSections}
             >
-            Torna alla Dashboard
+              Salva e torna alla Dashboard
             </Link>
           </Card>
         </Col>
@@ -246,4 +172,3 @@ function PageA11yWcagGuidelineList(props) {
     </Container>
   );
 }
-export default PageA11yWcagGuidelineList;

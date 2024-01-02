@@ -9,9 +9,9 @@ export const getTools = async () => {
   }
 };
 
-export const getToolsTypes = async () => {
+export const getToolsClasses = async () => {
   try {
-    const res = await client.get("tools/types");
+    const res = await client.get("tool-classes");
     return res.data;
   } catch (err) {
     throw err;

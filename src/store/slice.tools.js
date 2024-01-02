@@ -1,10 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const tool_include_a_tool_class = (classes, class_id) => {
+  for (let i = 0; classes && i < classes.length; i++) {
+    if (classes[i]._id === class_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export const toolsSlice = createSlice({
   name: "tools",
   initialState: {
     filter_word: "",
-    filter_type: null,
+    filter_class: null,
     filter_license: null,
 
     filter_page: 1,
@@ -12,32 +21,25 @@ export const toolsSlice = createSlice({
     tools_data: {},
     tools_data_filtered: {},
 
-    tools_data_type: {},
-    tools_data_licenses: {},
+    classes: [],
+    licenses: {},
   },
   reducers: {
     setToolsData: (state, action) => {
       state.tools_data = action.payload.data;
       state.tools_data_filtered = action.payload.data;
     },
-    setToolsDataTypes: (state, action) => {
-      const objects = action.payload.data;
-      const types = objects.map((object, index) => {
-        return object["types"];
-      });
-
-      const types_array = types.flat();
-      const unique_types_array = [...new Set(types_array)].sort();
-      state.tools_data_type = unique_types_array;
+    setToolsDataClsses: (state, action) => {
+      state.classes = action.payload.data;
     },
-    setToolsDataLicense: (state, action) => {
-      state.tools_data_licenses = action.payload.data;
+    setToolsDataLicenses: (state, action) => {
+      state.licenses = action.payload.data;
     },
     updateToolFilterWord: (state, action) => {
       state.filter_word = action.payload.value;
     },
     updateToolFilterType: (state, action) => {
-      state.filter_type = action.payload.value;
+      state.filter_class = action.payload.value;
     },
     updateToolFilterLicense: (state, action) => {
       state.filter_license = action.payload.value;
@@ -49,18 +51,18 @@ export const toolsSlice = createSlice({
           (state.filter_word === undefined || state.filter_word === ""
             ? true
             : tool.name
-                .toLowerCase()
-                .includes(state.filter_word.toLowerCase())) &&
-          (state.filter_type === undefined ||
-          state.filter_type === null ||
-          state.filter_type === ""
+              .toLowerCase()
+              .includes(state.filter_word.toLowerCase())) &&
+          (state.filter_class === undefined ||
+            state.filter_class === null ||
+            state.filter_class === ""
             ? true
-            : tool.types.includes(state.filter_type))
+            : tool_include_a_tool_class(tool.classes, (state.filter_class)))
       );
     },
     resetToolFilter: (state) => {
       state.filter_word = "";
-      state.filter_type = null;
+      state.filter_class = null;
       state.filter_license = null;
       state.filter_page = 1;
       state.tools_data_filtered = state.tools_data;
@@ -79,8 +81,8 @@ export const {
   resetToolFilter,
   setToolsData,
   filterTestData,
-  setToolsDataTypes,
-  setToolsDataLicense,
+  setToolsDataClsses,
+  setToolsDataLicenses,
   updateToolsFilterPage,
 } = toolsSlice.actions;
 export default toolsSlice.reducer;

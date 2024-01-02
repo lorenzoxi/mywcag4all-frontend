@@ -6,7 +6,7 @@ import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
 import { useTitle } from "../hooks/HookTitle";
 
-function PageA11yGuide(props) {
+export default function PageA11yGuide(props) {
   const breadcrumb_pages = [
     {
       page: "Home",
@@ -113,4 +113,3 @@ function PageA11yGuide(props) {
     </Container>
   );
 }
-export default PageA11yGuide;

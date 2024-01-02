@@ -11,28 +11,28 @@ function ItemList(props) {
       props.cardList !== null &&
       props.cardList !== undefined &&
       props.cardList?.length > 0 &&
-      props.cardList?.map((card) => {
+      props.cardList?.map((card, indx) => {
         switch (props.type) {
           case "test":
             return (
               <TestItemCard
-                key={`test-item-${card.id}`}
-                id={card.id}
-                title={card.name}
-                wcaglevel={card.level}
-                type={card.type}
-                isApplicable={card.is_applicable}
-                isPassed={card.is_passed}
-                page={props.index}
+                key={`test-item-${card.index}`}
+                index={card.index}
+                title={card.title}
+                wcagLevel={card.wcagLevel}
+                category={card.category}
+                isApplicable={card.isApplicable}
+                isMet={card.isMet}
               />
             );
           case "tool":
             return (
               <ToolItemCard
                 key={`tool-item-${card.index}`}
+                id={card._id}
                 index={card.index}
                 name={card.name}
-                types={card.types}
+                classes={card.classes}
                 licenseAbbr={card.licenseabbr}
                 licenseName={card.licensename}
                 price={card.pricing}
@@ -41,13 +41,13 @@ function ItemList(props) {
           case "website":
             return (
               <WebsiteItemCard
-                key={`website-item-${card.name}`}
-                id={card.id}
+                key={`website-item-${card._id}`}
+                id={card._id}
                 name={card.name}
                 score={card.score}
                 is_pa={card.is_pa}
                 update={props.updateHandling}
-                level={card.wcag_level}
+                level={card.level}
               />
             );
           case "wcag":
@@ -55,13 +55,13 @@ function ItemList(props) {
               <WcagItemCard
                 key={`wcag-item-${card.id}`}
                 id={card.id}
-                index={card.wcagindex}
-                title={card.wcagtitle}
-                description={card.wcagdescription}
-                wcaglevel={card.level}
-                url={card.ref_understanding}
-                isApplicable={card.is_applicable}
-                isPassed={card.is_passed}
+                index={card.index}
+                title={card.title}
+                description={card.description}
+                wcaglevel={card.wcagLevel}
+                url={card.linkApply}
+                isApplicable={card.isApplicable}
+                isMet={card.isMet}
                 isAgid={
                   card.level === "AA" || card.level === "A" ? true : false
                 }
@@ -75,7 +75,6 @@ function ItemList(props) {
   }, [props.cardList, props.type, props.updateHandling]);
 
   const displayList = useMemo(() => {
-    //console.log("card list ", props.cardList);
     return props.cardList?.length > 0 ? (
       <ul
         className="w-100 p-0 list-unstyled"

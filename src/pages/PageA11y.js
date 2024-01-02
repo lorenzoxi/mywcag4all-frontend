@@ -4,65 +4,24 @@ import Title from "../components/title/Title";
 import Breadcrumb from "../components/breadcrumb/Breadcrumb";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
-import axios from "../service/client";
 import { Link } from "react-router-dom";
 import { useTitle } from "../hooks/HookTitle";
 import { useSelector, useDispatch } from "react-redux";
-import { addWebsite } from "../store/websiteSlice";
-import { setTestData } from "../store/testSlice";
-import { resetToolFilter } from "../store/slice.tools";
+import { setWebsite, setFilters, setFilteredTestData } from "../store/websiteSlice";
 
-function PageA11y(props) {
-  const [websites, setWebsites] = useState([]);
+export default function PageA11y(props) {
   const [isSelected, setIsSelected] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const user = useSelector((state) => state.auth.user);
-  const website = useSelector((state) => state.website.website);
-
+  const websites = useSelector((state) => state.website.websites);
   const dispatch = useDispatch();
 
   const handleOnChange = (event) => {
-    let index = event.target.selectedIndex;
-    let optionElement = event.target.childNodes[index];
-    dispatch(addWebsite({ id: optionElement.value, name: optionElement.text }));
-
+    dispatch(setWebsite({ id: event.target.value }));
+    dispatch(setFilters())
+dispatch(setFilteredTestData())
     setIsSelected(true);
   };
 
   useTitle("Accessibilità | MyWcag4All");
-
-  useEffect(() => {
-
-    dispatch(resetToolFilter())
-    
-    const id = user.id;
-    axios
-      .get("/websites", {
-        params: {
-          user: id,
-        },
-      })
-      .then(function (res) {
-        setWebsites(res.data);
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        //console.log(error);
-        setIsLoading(false);
-      });
-  }, []);
-
-  const loadTestData = () => {
-    axios
-      .get("/tests", {
-        params: {
-          website: website.id,
-        },
-      })
-      .then(function (res) {
-        dispatch(setTestData({ data: res.data }));
-      });
-  };
 
   const display = useMemo(() => {
     return (
@@ -77,8 +36,8 @@ function PageA11y(props) {
         <option value="" hidden>
           Seleziona il sito che vuoi testare
         </option>
-        {websites.map((website) => {
-          return <option value={website.id}> {website.name} </option>;
+        {websites.map((website, index) => {
+          return <option value={website._id} key={`wbs-opt-${index}`}> {website.name} </option>;
         })}
       </Form.Select>
     );
@@ -107,10 +66,10 @@ function PageA11y(props) {
 
       <Card className="main-card shadow1">
         <h2 className="bold6">
-          Inizia selezionando un sito {process.env.REACT_APP_HELLO}{" "}
+          Inizia selezionando un sito{" "}
         </h2>
         {websites.length > 0 && display}
-        {websites.length === 0 && !isLoading && (
+        {websites.length === 0 && (
           <p>
             Non sembra che tu abbia ancora inserito un sito,{" "}
             <Link
@@ -118,7 +77,7 @@ function PageA11y(props) {
               state={{ location: "websites" }}
               className="default-anchor"
             >
-              inseriscine uno adesso
+              inserisci un sito uno ora
             </Link>
             !
           </p>
@@ -130,7 +89,6 @@ function PageA11y(props) {
               to="/accessibility-dev/a11y/choice"
               className="btn btn-danger w-100 bold8"
               state={{ location: "a11y" }}
-              onClick={loadTestData}
             >
               Inizia la valutazione di accessibilità
             </Link>
@@ -140,4 +98,3 @@ function PageA11y(props) {
     </Container>
   );
 }
-export default PageA11y;

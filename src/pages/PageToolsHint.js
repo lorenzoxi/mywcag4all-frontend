@@ -4,7 +4,7 @@ import Breadcrumb from "../components/breadcrumb/Breadcrumb";
 import ToolForm from "../components/tool-form/ToolForm";
 import { useTitle } from "../hooks/HookTitle";
 
-function PageToolsHint(props) {
+export default function PageToolsHint(props) {
   const breadcrumb_pages = [
     {
       page: "Home",
@@ -30,4 +30,3 @@ function PageToolsHint(props) {
     </Container>
   );
 }
-export default PageToolsHint;

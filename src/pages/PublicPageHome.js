@@ -7,15 +7,14 @@ import Card from "react-bootstrap/Card";
 import { FaMagic, FaTools, FaBackward } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import axios from "../service/client";
+import { getLicenses } from "../service/api/api.licenses";
 import {
   setToolsData,
-  setToolsDataLicense,
-  setToolsDataTypes,
+  setToolsDataClsses,
 } from "../store/slice.tools";
-import { getTools, getToolsTypes } from "../service/api/api.tools";
+import { getTools, getToolsClasses } from "../service/api/api.tools";
 
-function PageHome(props) {
+export default function PageHome(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -23,12 +22,11 @@ function PageHome(props) {
       dispatch(setToolsData({ data: res }));
     });
 
-    getToolsTypes().then((res) => {
-      console.log("res", res)
-      dispatch(setToolsDataTypes({ data: res }));
+    getToolsClasses().then((res) => {
+      dispatch(setToolsDataClsses({ data: res }));
     });
-    axios.get("/tool-licenses", {}).then(function (res) {
-      dispatch(setToolsDataLicense({ data: res.data }));
+    getLicenses().then(function (res) {
+      console.log("set licenses data res", res)
     });
   }, []);
 
@@ -99,4 +97,3 @@ function PageHome(props) {
     </Container>
   );
 }
-export default PageHome;

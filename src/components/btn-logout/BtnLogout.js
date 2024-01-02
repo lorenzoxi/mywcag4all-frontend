@@ -17,7 +17,7 @@ const LogoutButton = () => {
           className="w-75 "
           variant="danger"
           onClick={() => 
-            logout({ returnTo: "https://web.math.unipd.it/accessibility-dev/" })
+            logout({ returnTo: `${process.env.REACT_APP_LOGOUT_REDIRECT_URL}` })
           }
         >
           Log Out

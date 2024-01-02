@@ -1,6 +1,6 @@
 import React from "react";
 
-function Title(props) {
+export default function Title(props) {
 
     return (
         <div className={"w-100 text-center"}>
@@ -10,5 +10,3 @@ function Title(props) {
         </div>
     );
 }
-
-export default Title;

@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import emailjs from "@emailjs/browser";
 import { Link } from "react-router-dom";
 
-function ToolForm(props) {
+export default function ToolForm(props) {
   const [sended, setSended] = useState(false);
 
   const onSubmit = (e) => {
@@ -120,5 +120,3 @@ function ToolForm(props) {
     </>
   );
 }
-
-export default ToolForm;

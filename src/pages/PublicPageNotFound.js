@@ -7,10 +7,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import Title from "../components/title/Title";
 import { useTitle } from "../hooks/HookTitle";
-import Header from "../components/header/Header";
-import Spinner from "react-bootstrap/esm/Spinner";
 
-function PublicPageNotFound(props) {
+
+export default function PublicPageNotFound(props) {
   const { isLoading } = useAuth0();
   useTitle("Pagina non trovata | MyWcag4All");
 
@@ -37,4 +36,3 @@ function PublicPageNotFound(props) {
     </Container>
   );
 }
-export default PublicPageNotFound;

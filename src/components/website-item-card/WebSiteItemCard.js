@@ -1,34 +1,23 @@
 import React from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import WcagLevels from "../wcag-levels/WcagLevels";
 import Badge from "react-bootstrap/esm/Badge";
-import { useSelector, useDispatch } from "react-redux";
-import { addWebsite } from "../../store/websiteSlice";
-import axios from "../../service/client";
-import { setTestData } from "../../store/testSlice";
+import { useDispatch } from "react-redux";
+import { setWebsite, setFilters, setFilteredTestData } from "../../store/websiteSlice";
 
-function WebsiteItemCard(props) {
+export default function WebsiteItemCard(props) {
   const dispatch = useDispatch();
-  const website = useSelector((state) => state.website.website);
   const navigate = useNavigate();
 
   const onClickHandler = () => {
-    dispatch(addWebsite({ id: props.id, name: props.name }));
-
-    axios
-      .get("/tests", {
-        params: {
-          website: props.id,
-        },
-      })
-      .then(function (res) {
-        dispatch(setTestData({ data: res.data }));
-        navigate("/accessibility-dev/a11y/tests", {
-          state: { location: "a11y" },
-        });
-      });
+    dispatch(setWebsite({ id: props.id }))
+    dispatch(setFilters())
+dispatch(setFilteredTestData())
+    navigate("/accessibility-dev/a11y/tests", {
+      state: { location: "a11y" },
+    });
   };
 
   return (
@@ -84,5 +73,3 @@ function WebsiteItemCard(props) {
     </li>
   );
 }
-
-export default WebsiteItemCard;

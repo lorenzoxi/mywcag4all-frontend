@@ -2,13 +2,7 @@ import { React, useMemo } from 'react';
 import Card from 'react-bootstrap/Card';
 import ItemList from '../item-list/ItemList';
 
-function WcagGuideline(props) {
-
-    const guidelinesResolved = useMemo(() => {
-        return <ItemList cardList={props.criteria} type="wcag" />
-
-    
-    }, [props.criteria])
+export default function WcagGuideline(props) {
 
 
     return (
@@ -19,17 +13,17 @@ function WcagGuideline(props) {
 
                 <h2>
                     Linea guida {props.index} - {props.title}
-                    </h2>
+                </h2>
 
-                    <p>
-                        {props.description}
-                    </p>
+                <p>
+                    {props.description}
+                </p>
             </Card.Header>
 
             <Card.Body>
-                
-                {guidelinesResolved}
-                
+
+                <ItemList cardList={props.criteria} type="wcag" />
+
             </Card.Body>
 
         </Card>
@@ -37,5 +31,3 @@ function WcagGuideline(props) {
     )
 
 }
-
-export default WcagGuideline;

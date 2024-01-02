@@ -1,7 +1,7 @@
 import React from "react";
 import { FaCogs, FaCog, FaHandPaper } from "react-icons/fa";
 
-function TestLegend(props) {
+export default function TestLegend(props) {
   return (
     <>
       <a href="#container" className="visually-hidden">
@@ -22,5 +22,3 @@ function TestLegend(props) {
     </>
   );
 }
-
-export default TestLegend;

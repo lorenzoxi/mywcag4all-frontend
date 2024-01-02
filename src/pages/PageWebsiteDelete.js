@@ -6,7 +6,7 @@ import Title from "../components/title/Title";
 import { useLocation } from "react-router-dom";
 import { useTitle } from "../hooks/HookTitle";
 
-function PageWebsiteDelete(props) {
+export default function PageWebsiteDelete(props) {
 
     const location = useLocation();
     const currWebsiteName = location.state?.name;
@@ -39,4 +39,3 @@ function PageWebsiteDelete(props) {
     </Container>
   );
 }
-export default PageWebsiteDelete;

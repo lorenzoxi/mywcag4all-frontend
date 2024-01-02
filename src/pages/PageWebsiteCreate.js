@@ -5,7 +5,7 @@ import Breadcrumb from "../components/breadcrumb/Breadcrumb";
 import Title from "../components/title/Title";
 import { useTitle } from "../hooks/HookTitle";
 
-function PageWebsiteCreate(props) {
+export default function PageWebsiteCreate(props) {
 
 
   const breadcrumb_pages = [
@@ -36,4 +36,3 @@ function PageWebsiteCreate(props) {
     </Container>
   );
 }
-export default PageWebsiteCreate;

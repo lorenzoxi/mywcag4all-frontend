@@ -2,7 +2,7 @@ import { React, useEffect, useMemo, useState } from "react";
 import Pagination from "react-bootstrap/Pagination";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTestFilterPage } from "../../store/testSlice";
+import { updateTestFilterPage } from "../../store/websiteSlice";
 import { updateToolsFilterPage } from "../../store/slice.tools";
 import { updatePage } from "../../store/websiteSlice";
 import { updatePage as updatePageR} from "../../store/rankingSlice";
@@ -11,7 +11,7 @@ export default function MyPagination(props) {
   const dispatch = useDispatch();
   const page = useSelector((state) => {
     if(props.type==="test"){
-      return state.test.filter_page;
+      return state.website.website.filters.filter_page;
     }
     if(props.type==="tools"){
       return state.tools.filter_page;
@@ -20,7 +20,7 @@ export default function MyPagination(props) {
       return state.ranking.page_ranking;
     }
     if(props.type==="website"){
-      return state.website.page_website;
+      return state.website.page;
     }
   })
   

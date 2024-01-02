@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Price from "../price/Price";
 
-function ToolCard(props) {
+export default function ToolCard(props) {
 
   return (
     <Card className="w-100 card-specific shadow-sm">
@@ -29,10 +29,10 @@ function ToolCard(props) {
 
           <Col as="dt" lg={3}>Licenza:</Col>
           <Col as="dd" lg={9}>
-            {props.data?.url_license ? (
-              <a className="default-anchor" hrefLang={"en"} href={props.data?.url_license} target="_blank" rel="noopener noreferrer external"> {props.data?.license} </a>
+            {props.data?.license.url ? (
+              <a className="default-anchor" hrefLang={"en"} href={props.data?.license.url} target="_blank" rel="noopener noreferrer external"> {props.data?.license} </a>
             ) : (
-              <span> {props.data?.license}</span>
+              <span> {props.data?.license.name}</span>
             )}
           </Col>
 
@@ -54,5 +54,3 @@ function ToolCard(props) {
     </Card>
   );
 }
-
-export default ToolCard;

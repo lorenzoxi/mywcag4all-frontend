@@ -6,7 +6,7 @@ import Title from "../components/title/Title";
 import { useLocation } from "react-router-dom";
 import { useTitle } from "../hooks/HookTitle";
 
-function PageWebsiteUpdate(props) {
+export default function PageWebsiteUpdate(props) {
 
     const location = useLocation();
     const currWebsiteName = location.state?.name;
@@ -33,10 +33,9 @@ function PageWebsiteUpdate(props) {
 
       <Title title="Aggiornamento dati" className="title-a11y" />
 
-      <WebsiteForm type="update" action={`Modifica i dati del sito ${currWebsiteName}`} name={currWebsiteName}/>
+      <WebsiteForm type="update" action={`Modifica i dati del sito`} name={currWebsiteName}/>
 
    
     </Container>
   );
 }
-export default PageWebsiteUpdate;

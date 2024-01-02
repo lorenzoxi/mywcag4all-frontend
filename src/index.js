@@ -14,7 +14,7 @@ import persistStore from "redux-persist/es/persistStore";
 //html lang
 document.documentElement.lang = "it";
 const local = process.env.REACT_APP_REDIRECT_URL;
-const audience = process.env.REACT_APP_API_ENDPOINT;
+const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientid = process.env.REACT_APP_AUTH0_CLIENT_ID;
 let persistor = persistStore(store);

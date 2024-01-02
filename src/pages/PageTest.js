@@ -1,48 +1,29 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import Card from "react-bootstrap/Card";
 import { useParams } from "react-router-dom";
 import Container from "../components/container/Container";
 import ToolList from "../components/tool-list/ToolList";
 import Breadcrumb from "../components/breadcrumb/Breadcrumb";
-import axios from "../service/client";
-import TestType from "../components/test-type/TestType";
-import Spinner from "react-bootstrap/Spinner";
+import TestCategory from "../components/test-type/TestCategory";
 import { Link } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { useTitle } from "../hooks/HookTitle";
+import { useSelector } from "react-redux";
 
-const PageTest = (props) => {
-  const [data, setData] = useState({});
-  const [toolList, setToolList] = useState([]);
+export default function PageTest(props) {
   const [criteria, setCriteria] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const params = useParams();
   const id = params.testid;
 
+  const test = useSelector(state => {
+    const selectedTest = state.website.website.tests.find(test => test.index === id);
+    return selectedTest;
+  })
+
+
   useTitle("Test ", id, " | Lista di test | Accessibilità | MyWcag4All");
-
-  useEffect(() => {
-    axios
-      .get("/test", {
-        params: {
-          id: id,
-        },
-      })
-      .then(function (res) {
-        // alert(JSON.stringify(res.data))
-
-        setData(res.data.test);
-        setToolList(res.data.tools);
-        setCriteria(res.data.criteria);
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        //console.log(error);
-        setIsLoading(false);
-      });
-  }, []);
 
   const breadcrumb_pages = [
     {
@@ -83,110 +64,101 @@ const PageTest = (props) => {
 
       <Card className="card-specific shadow">
         <Card.Header className="border-bottom">
-          <h1 className="bold7 text-center">Specifiche Test {params.testid}</h1>
+          <h1 className="bold7 text-center">Specifiche Test {id}</h1>
         </Card.Header>
         <Card.Body>
-          {isLoading ? (
-            <>
-              <div className="text-center">
-                <Spinner animation="border" role="status" className="m-5">
-                  <span className="visually-hidden">Caricamento</span>
-                </Spinner>
-              </div>
-            </>
-          ) : (
-            <>
-              <h2 className="bold7">Informazioni</h2>
-              <Row as="dl">
-                <Col as="dt" sm={3}>
-                  <p>Descrizione: </p>
-                </Col>
-                <Col as="dd" sm={9}>
-                  <p>{data.purpose} </p>
-                </Col>
 
-                <Col as="dt" sm={3}>
-                  <p>Tipologia di test: </p>
-                </Col>
-                <Col as="dd" sm={9}>
-                  {data.type} <TestType type={data.type_no} />
-                </Col>
+          <>
+            <h2 className="bold7">Informazioni</h2>
+            <Row as="dl">
+              <Col as="dt" sm={3}>
+                <p>Descrizione: </p>
+              </Col>
+              <Col as="dd" sm={9}>
+                <p>{test.purpose}</p>
+              </Col>
 
-                <Col as="dt" sm={3}>
-                  <p>Procedura: </p>
-                </Col>
-                <Col as="dd" sm={9}>
-                  <p>{data.description} </p>
-                </Col>
-              </Row>
+              <Col as="dt" sm={3}>
+                <p>Tipologia di test: </p>
+              </Col>
+              <Col as="dd" sm={9}>
+                {test.category} <TestCategory category={test.category} />
+              </Col>
 
-              <hr aria-hidden="true" alt="" />
+              <Col as="dt" sm={3}>
+                <p>Procedura: </p>
+              </Col>
+              <Col as="dd" sm={9}>
+                <p>{test.procedure}</p>
+              </Col>
+            </Row>
 
-              <h2 className="bold7">Accessibilità</h2>
+            <hr aria-hidden="true" alt="" />
 
-              <Row as="dl">
-                <Col as="dt" sm={3}>
-                  <p>
-                    <strong>Livello WCAG: </strong>
-                  </p>
-                </Col>
-                <Col as="dd" sm={9}>
-                  <p>{data.level}</p>
-                </Col>
-                <Col as="dt" sm={3}>
-                  <p>
-                    <strong>Criteri WCAG: </strong>
-                  </p>
-                </Col>
-                <Col as="dd" sm={9}>
-                  <ul>
-                    {criteria &&
-                      criteria.map((element) => {
-                        return (
-                          <li>
-                            {element.index} - {element.name}
-                          </li>
-                        );
-                      })}
-                  </ul>
-                </Col>
+            <h2 className="bold7">Accessibilità</h2>
 
-                <Col as="dt" sm={3}>
-                  <p>
-                    <strong>Criteri AGID: </strong>
-                  </p>
-                </Col>
-                <Col as="dd" sm={9}>
-                  <ul>
-                    {criteria &&
-                      criteria.map((element) => {
-                        return (
-                          <li>
-                            9.{element.index} - {element.name}
-                          </li>
-                        );
-                      })}
-                  </ul>
-                </Col>
-              </Row>
+            <Row as="dl">
+              <Col as="dt" sm={3}>
+                <p>
+                  <strong>Livello WCAG: </strong>
+                </p>
+              </Col>
+              <Col as="dd" sm={9}>
+                <p>{test.level}</p>
+              </Col>
+              <Col as="dt" sm={3}>
+                <p>
+                  <strong>Criteri WCAG: </strong>
+                </p>
+              </Col>
+              <Col as="dd" sm={9}>
+                <ul>
+                  {criteria &&
+                    criteria.map((element) => {
+                      return (
+                        <li>
+                          {element.index} - {element.name}
+                        </li>
+                      );
+                    })}
+                </ul>
+              </Col>
 
-              <hr aria-hidden="true" alt="" />
+              <Col as="dt" sm={3}>
+                <p>
+                  <strong>Criteri AGID: </strong>
+                </p>
+              </Col>
+              <Col as="dd" sm={9}>
+                <ul>
+                  {criteria &&
+                    criteria.map((element) => {
+                      return (
+                        <li>
+                          9.{element.index} - {element.name}
+                        </li>
+                      );
+                    })}
+                </ul>
+              </Col>
+            </Row>
 
-              <h2 className="bold7">Strumenti</h2>
+            <hr aria-hidden="true" alt="" />
 
-              {!toolList && (
-                <>
-                  <p>Nessun strumento disponibile</p>
-                </>
-              )}
+            <h2 className="bold7">Strumenti</h2>
 
-              {toolList && toolList.length > 0 && (
-                <>
-                  <ToolList toolList={toolList} />
-                </>
-              )}
-            </>
-          )}
+            {!test.tools && (
+              <>
+                <p>Nessun strumento disponibile</p>
+              </>
+            )}
+
+            {test.tools && test.tools.length > 0 && (
+              <>
+                <ToolList tools={test.tools} />
+              </>
+            )}
+          </>
 
           <Link
             to="/accessibility-dev/a11y/tests"
@@ -201,5 +173,3 @@ const PageTest = (props) => {
     </Container>
   );
 };
-
-export default PageTest;

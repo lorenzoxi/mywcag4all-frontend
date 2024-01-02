@@ -6,63 +6,40 @@ import Col from "react-bootstrap/Col";
 import Badge from "react-bootstrap/Badge";
 import axios from "../../service/client";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  updateTestDataIsApplicable,
-  updateTestDataIsPassed,
-} from "../../store/wcagSlice";
+import { updateCriterion } from "../../store/websiteSlice";
+import { getIndexes } from "../../utils/indexManager";
 
-function WcagItemCard(props) {
+export default function WcagItemCard(props) {
   const [isApplicable, setIsApplicable] = useState(props.isApplicable);
-  const [isPassed, setIsPassed] = useState(props.isPassed);
-  const user = useSelector((state) => state.auth.user);
-  const website = useSelector((state) => state.website.website);
+  const [isMet, setIsMet] = useState(props.isMet);
+  const [indexes, setIndexes] = useState(getIndexes(props.index));
   const dispatch = useDispatch();
 
-  const onClickHandlerSwitch = () => {
+  const onClickHandlerSwitch = (event) => {
+
+    const tmpIsApplicable = event.target.checked;
+    const tmpIsMet = tmpIsApplicable==false ? true : false;
+    dispatch(updateCriterion({ criterionIndex: props.index, guidelineIndex: indexes.guidelineIndex, sectionIndex: indexes.sectionIndex, isMet: tmpIsMet, isApplicable: tmpIsApplicable }));
+
     if (isApplicable) {
       setIsApplicable(false);
-      setIsPassed(true);
+      setIsMet(true);
     } else {
       setIsApplicable(true);
     }
   };
 
-  const onClickHandlerCheckbox = () => {
-    if (isPassed) {
-      setIsPassed(false);
+  const onClickHandlerCheckbox = (event) => {
+    
+    const tmpIsMet = event.target.checked;
+    dispatch(updateCriterion({ criterionIndex: props.index, guidelineIndex: indexes.guidelineIndex, sectionIndex: indexes.sectionIndex, isMet: tmpIsMet, isApplicable }));
+
+    if (isMet) {
+      setIsMet(false);
     } else {
-      setIsPassed(true);
+      setIsMet(true);
     }
   };
-
-  useEffect(() => {
-    dispatch(updateTestDataIsPassed({ id: props.id, value: isPassed }));
-    dispatch(updateTestDataIsApplicable({ id: props.id, value: isApplicable }));
-    axios
-      .post("/wcag", {
-        id: props.id,
-        user: user.id,
-        website: website.id,
-        is_applicable: isApplicable,
-        is_passed: isPassed,
-      })
-      .then(function (res) {})
-      .catch(function (error) {
-        //console.log(error);
-      })
-      .then(function () {
-        // always executed
-      });
-  }, [
-    onClickHandlerSwitch,
-    onClickHandlerCheckbox,
-    dispatch,
-    props.id,
-    user.id,
-    website.id,
-    isApplicable,
-    isPassed,
-  ]);
 
   return (
     <li
@@ -117,7 +94,7 @@ function WcagItemCard(props) {
             <Form.Group controlId="formBasicCheckbox" className="mt-0">
               <Form.Check
                 inline
-                checked={isPassed}
+                checked={isMet}
                 disabled={isApplicable ? false : true}
                 type="switch"
                 label="Superato"
@@ -132,5 +109,3 @@ function WcagItemCard(props) {
     </li>
   );
 }
-
-export default WcagItemCard;

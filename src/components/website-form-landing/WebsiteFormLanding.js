@@ -2,7 +2,7 @@ import { React } from "react";
 import { Link } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 
-function WebsiteFormLanding(props) {
+export default function WebsiteFormLanding(props) {
   return (
       <Card className="main-card shadow1">
 
@@ -19,5 +19,3 @@ function WebsiteFormLanding(props) {
 
   );
 }
-
-export default WebsiteFormLanding;

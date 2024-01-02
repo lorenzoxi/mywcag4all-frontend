@@ -11,13 +11,12 @@ import WebsiteForm from "../components/website-form/WebsiteForm";
 import Card from "react-bootstrap/Card";
 import { useTitle } from "../hooks/HookTitle";
 import { useSelector, useDispatch } from "react-redux";
-import { addUser, removeUser } from "../store/authSlice";
-import { resetTestFilter } from "../store/testSlice";
+import { setFilters, setFilteredTestData } from "../store/websiteSlice";
 import { resetToolFilter } from "../store/slice.tools";
 
-function PageProfile(props) {
-  const user = useSelector((state) => state.auth.user);
+export default function PageProfile(props) {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
   const [state, setState] = useState("");
   const [sendedChangePasswordEmail, setSendedChangePasswordEmail] =
@@ -30,7 +29,8 @@ function PageProfile(props) {
   }
 
   useEffect(() => {
-    dispatch(resetTestFilter());
+    dispatch(setFilters())
+    dispatch(setFilteredTestData());
     dispatch(resetToolFilter());
   });
 
@@ -59,7 +59,7 @@ function PageProfile(props) {
 
     axios
       .request(options)
-      .then(function (response) {})
+      .then(function (response) { })
       .catch(function (error) {
         console.error(error);
       });
@@ -76,13 +76,12 @@ function PageProfile(props) {
         },
       })
       .then((res) => {
-        logout({ returnTo: "https://web.math.unipd.it/accessibility-dev/" });
+        logout({ returnTo: `${process.env.REACT_APP_LOGOUT_REDIRECT_URL}` });
       })
       .catch((error) => {
-        logout({ returnTo: "https://web.math.unipd.it/accessibility-dev/" });
-        //console.log(error);
+        logout({ returnTo: `${process.env.REACT_APP_LOGOUT_REDIRECT_URL}` });
       })
-      .then(() => {});
+      .then(() => { });
   };
 
   const deleteAccountHandler = () => {
@@ -134,7 +133,8 @@ function PageProfile(props) {
             <Button
               variant="warning w-100 mb-3"
               onClick={changePasswordHandler}
-              disabled={sendedChangePasswordEmail}
+              disabled={true}
+            //disabled={sendedChangePasswordEmail} //TODO: enable when email service will be available
             >
               {!sendedChangePasswordEmail
                 ? "Cambia password"
@@ -147,6 +147,8 @@ function PageProfile(props) {
               variant="danger w-100"
               onClick={deleteAccountHandler}
               aria-controls="delete-user-btns"
+              disabled={true}
+            //disabled={false} //TODO: check if it works correctly before enabling
             >
               Cancella profilo
             </Button>
@@ -186,4 +188,3 @@ function PageProfile(props) {
     </Container>
   );
 }
-export default PageProfile;

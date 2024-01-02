@@ -19,10 +19,7 @@ import PageWebsiteCreate from "./pages/PageWebsiteCreate";
 import PageA11yWcagGuidelineList from "./pages/PageA11yWcagGuidelinesList";
 import PageA11yWcagGuideline from "./pages/PageA11yWcagGuideline";
 import { useLocation } from "react-router-dom";
-import { addUser, removeUser } from "./store/authSlice";
-import { useSelector, useDispatch } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
-import axios from "./service/client";
 import PageA11yResult from "./pages/PageA11yResult";
 import Header from "./components/header/Header";
 import PageToolsHint from "./pages/PageToolsHint";
@@ -36,8 +33,7 @@ import { useTitle } from "./hooks/HookTitle";
 function App() {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
     useAuth0();
-  const dispatch = useDispatch();
-  const [isTokenAvailable, setIsTokenAvailable] = useState(false);
+  const [isTokenAvailable, setIsTokenAvailable] = useState(true);
 
   const getAccessToken = useCallback(() => {
     getAccessTokenSilently().then((token) => {
@@ -60,7 +56,8 @@ function App() {
   useTitle("MyWcag4All");
 
   const display = useMemo(() => {
-    if (isAuthenticated && (isLoading || !isTokenAvailable)) {
+    // if (isAuthenticated && (isLoading || !isTokenAvailable)) { TODO: to develop
+    if (false) {
       return (
         <div id="main" className="d-flex flex-row justify-content-center m-5">
           <Spinner animation="border" role="status">
@@ -68,7 +65,8 @@ function App() {
           </Spinner>
         </div>
       );
-    } else if (!isLoading && isAuthenticated && isTokenAvailable) {
+    } // else if (!isLoading && isAuthenticated && isTokenAvailable) {
+    else if (true) { // { TODO: to develop
       return (
         <>
           <Header />

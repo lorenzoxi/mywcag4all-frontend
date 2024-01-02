@@ -1,4 +1,4 @@
-import { React, useState, useMemo, useEffect } from "react";
+import { React, useMemo } from "react";
 import Container from "../components/container/Container";
 import MyPagination from "../components/pagination/MyPagination";
 import ItemList from "../components/item-list/ItemList";
@@ -10,15 +10,15 @@ import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
 import Card from "react-bootstrap/Card";
 import { useTitle } from "../hooks/HookTitle";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-function PageTools(props) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function PageTools(props) {
 
   useTitle("Lista strumenti | Accessibilità | MyWcag4All");
-  const toolsData = useSelector((state) => state.tools.tools_data_filtered);
+  const tools = useSelector((state) => state.tools.tools_data);
   const page = useSelector((state) => state.tools.filter_page);
 
+  console.log("tools", tools);
 
   const listGrouped = useMemo(() => {
     const listTemp = [];
@@ -26,13 +26,12 @@ function PageTools(props) {
       j,
       temporary,
       chunk = 9;
-
-    for (i = 0, j = toolsData.length; i < j; i += chunk) {
-      temporary = toolsData.slice(i, i + chunk);
+    for (i = 0, j = tools.length; i < j; i += chunk) {
+      temporary = tools.slice(i, i + chunk);
       listTemp.push(temporary);
     }
     return listTemp;
-  }, [toolsData]);
+  }, [tools]);
 
   const cardsByPage = useMemo(() => {
     return listGrouped[Number(page - 1)];
@@ -43,11 +42,11 @@ function PageTools(props) {
       page: "Home",
       url: "/accessibility-dev/",
       isCurrent: false,
-      state: "home",
+      state: "websites",
     },
     {
       page: "Lista strumenti e risorse",
-      url: "/accessibility-dev/tools",
+      url: "/accessibility-dev/a11y/tools",
       isCurrent: true,
       state: "tools",
     },
@@ -59,55 +58,44 @@ function PageTools(props) {
 
       <Title title="STRUMENTI PER L'ACCESSIBILITÀ" className="title-tools" />
 
-      <SearchBarTools uid="tools-list" hint={false} />
+      <SearchBarTools uid="tools-list" hint={true} />
       <br />
 
-      {isLoading ? (
-        <>
-          <div className="text-center">
-            <Spinner animation="border" role="status" className="m-5">
-              <span className="visually-hidden">Caricamento...</span>
-            </Spinner>
-          </div>
-        </>
-      ) : (
-        <>
-          {listGrouped.length > 0 && (
-            <Row className="responsive-font-size md-display-none">
-              <Col lg={5} className="px-3 bold8">
-                <span> NOME </span>
-              </Col>
 
-              <Col lg={5} className="p-0 text-center bold8">
-                <span>TIPOLOGIA</span>
-              </Col>
+      <>
+        {listGrouped.length > 0 && (
+          <Row className="responsive-font-size md-display-none">
+            <Col md={12} lg={5} className="px-3 bold8">
+              <span> NOME </span>
+            </Col>
 
+            <Col md={12} lg={5} className="p-0 text-center bold8">
+              <span>TIPOLOGIA</span>
+            </Col>
 
-              <Col lg={2} className="p-0 text-center"></Col>
-            </Row>
-          )}
+            <Col md={12} lg={2} className="p-0 text-center"></Col>
+          </Row>
+        )}
 
-          <ItemList
-            cardList={cardsByPage}
-            index={page}
-            type="tool"
-            uid="tools-list"
-            element="strumento"
-          />
-          {listGrouped.length > 1 && !isLoading && (
-            <>
-              <Card className="main-card my-3 shadow1">
-                <MyPagination
-                  totalPage={listGrouped.length}
-                  actualPage={page}
-                  type={"tools"}
-                />
-              </Card>
-            </>
-          )}
-        </>
-      )}
+        <ItemList
+          cardList={cardsByPage}
+          index={page}
+          type="tool"
+          uid="tools-list"
+          element="strumento"
+        />
+        {listGrouped.length > 1 && (
+          <>
+            <Card className="main-card my-3 shadow1">
+              <MyPagination
+                totalPage={listGrouped.length}
+                actualPage={page}
+                type={"tools"}
+              />
+            </Card>
+          </>
+        )}
+      </>
     </Container>
   );
 }
-export default PageTools;

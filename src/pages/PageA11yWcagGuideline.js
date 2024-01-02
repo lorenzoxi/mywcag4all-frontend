@@ -1,51 +1,30 @@
-import { React, useState, useMemo, useEffect } from "react";
+import { React, useMemo } from "react";
 import Container from "../components/container/Container";
 import Title from "../components/title/Title";
 import { useParams } from "react-router-dom";
 import Breadcrumb from "../components/breadcrumb/Breadcrumb";
-import axios from "../service/client";
 import WcagGuideline from "../components/wcag-guideline/WcagGuideline";
 import { Link } from "react-router-dom";
-import Spinner from "react-bootstrap/Spinner";
 import Card from "react-bootstrap/Card";
 import { useTitle } from "../hooks/HookTitle";
 import { useSelector } from "react-redux";
+import { postUpdateWebsiteSections } from "../service/api/api.websites";
+import { updateWebsiteResults } from "../store/websiteSlice";
+import { useDispatch } from "react-redux";
 
-function PageA11yWcagGuideline(props) {
+export default function PageA11yWcagGuideline(props) {
   const params = useParams();
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.auth.user);
   const website = useSelector((state) => state.website.website);
+  const guidelines = useSelector((state) => state.website.website.sections[params.guideline - 1].guidelines);
+  const dispatch = useDispatch();
 
-  useTitle("Sezione WCAG ", params.guideline ,"| Controllo criteri WCAG | Dashboard | Accessibilità | MyWcag4All");
-
-
-  useEffect(() => {
-    setIsLoading(true);
-    axios
-      .get("/guidelines", {
-        params: {
-          section: params.guideline,
-          website: website.id,
-        },
-      })
-      .then(function (res) {
-        setData(res.data);
-        setIsLoading(false);
-      })
-      .catch(function (error) {
-        //console.log(error);
-      })
-      .then(function () {
-        setIsLoading(false);
-      });
-  }, []);
+  useTitle("Sezione WCAG ", params.guideline, " | Controllo criteri WCAG | Dashboard | Accessibilità | MyWcag4All");
 
   const displaySection = useMemo(() => {
     return (
-      data != null &&
-      data.map((guideline) => (
+
+      guidelines?.map((guideline) => (
         <>
           <WcagGuideline
             index={guideline.index}
@@ -57,7 +36,7 @@ function PageA11yWcagGuideline(props) {
         </>
       ))
     );
-  }, [data]);
+  }, [guidelines]);
 
   const breadcrumb_pages = [
     {
@@ -93,14 +72,12 @@ function PageA11yWcagGuideline(props) {
   ];
 
   const updateData = () => {
-    axios
-    .post("/website-update-level-and-score", {
-      user: user.id,
-      website: website.id,
-    })
-    .then(function (res) {})
-    .catch(function (error) {
-      //console.log(error);
+    postUpdateWebsiteSections(website._id, website.sections).then((res) => {
+      console.log("data updated");
+      console.log("results: ", res)
+      dispatch(updateWebsiteResults({ results: res }))
+    }).catch((err) => {
+      console.log("error");
     });
   }
 
@@ -114,33 +91,22 @@ function PageA11yWcagGuideline(props) {
         className="title-a11y"
       />
 
-      {isLoading ? (
-        <>
-          <div className="text-center">
-            <Spinner animation="border" role="status" className="m-5">
-              <span className="visually-hidden">Caricamento...</span>
-            </Spinner>
-          </div>
-        </>
-      ) : (
-        <>
-          {displaySection}
-          <br />
-          <Card className="main-card my-3 shadow1">
-            <Link
-              to="/accessibility-dev/a11y/choice"
-              className="btn btn-success btn-block shadow w-100"
-              state={{ location: "a11y" }}
-              rel="prev"
-              onClick={updateData}
-            >
-              Salva e torna alle sezioni WCAG
-            </Link>
-          </Card>
+      <>
+        {displaySection}
+        <br />
+        <Card className="main-card my-3 shadow1">
+          <Link
+            to="/accessibility-dev/a11y/wcag"
+            className="btn btn-success btn-block shadow w-100"
+            state={{ location: "a11y" }}
+            rel="prev"
+            onClick={updateData}
+          >
+            Salva e torna alle sezioni WCAG
+          </Link>
+        </Card>
 
-        </>
-      )}
+      </>
     </Container>
   );
 }
-export default PageA11yWcagGuideline;

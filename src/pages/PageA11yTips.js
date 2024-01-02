@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { FaVuejs, FaAngular, FaReact } from "react-icons/fa";
 import { useTitle } from "../hooks/HookTitle";
 
-function PageA11yTips(props) {
+export default function PageA11yTips(props) {
   const breadcrumb_pages = [
     {
       page: "Home",
@@ -153,4 +153,3 @@ function PageA11yTips(props) {
     </Container>
   );
 }
-export default PageA11yTips;
